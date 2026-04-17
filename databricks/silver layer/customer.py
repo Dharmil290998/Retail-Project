@@ -11,7 +11,7 @@ from pyspark.sql.functions import (col, trim, to_date, row_number, current_times
 
 
 storage_account = "project1demo"
-container_name = "project1demo"
+container_name = "project1"
 table_name = "customers"
 
 bronze_path = f"abfss://{container_name}@{storage_account}.dfs.core.windows.net/Sales Project/On-Premises/{table_name}/*"
@@ -33,9 +33,8 @@ bronze_path = f"abfss://{container_name}@{storage_account}.dfs.core.windows.net/
 
 # COMMAND ----------
 
-
 # Read Transaction CSV from Bronze
-df = spark.read.format("csv").option("header", "true").load(bronze_path)  
+df = spark.read.format("csv").option("header", "true").load(bronze_path) 
 display(df)
 
 # COMMAND ----------

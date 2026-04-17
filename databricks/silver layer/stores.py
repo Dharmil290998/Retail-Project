@@ -11,7 +11,7 @@ from pyspark.sql.functions import (col, trim, to_date, row_number, current_times
 
 
 storage_account = "project1demo"
-container_name = "project1demo"
+container_name = "project1"
 table_name = "stores"
 
 bronze_path = f"abfss://{container_name}@{storage_account}.dfs.core.windows.net/Sales Project/Rest API/{table_name}/*"
