@@ -1,0 +1,48 @@
+{
+	"name": "AzureSqlTable1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "SqlDatabase1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "TABLENAME",
+				"type": "varchar"
+			},
+			{
+				"name": "SCHEMANAME",
+				"type": "varchar"
+			},
+			{
+				"name": "FOLDERNAME",
+				"type": "varchar"
+			},
+			{
+				"name": "FILENAME",
+				"type": "varchar"
+			},
+			{
+				"name": "DELTACOL",
+				"type": "varchar"
+			},
+			{
+				"name": "LASTPROCESSEDVALUE",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "sales",
+			"table": "WATERMARKTABLE"
+		}
+	}
+}
