@@ -122,18 +122,8 @@
 										},
 										"type": "Int64"
 									},
-									"SCHEMANAME": {
-										"value": {
-											"value": "@item().SCHEMANAME",
-											"type": "Expression"
-										},
-										"type": "String"
-									},
 									"TABLENAME": {
-										"value": {
-											"value": "@item().TABLENAME",
-											"type": "Expression"
-										},
+										"value": "@concat(item(),'.json')",
 										"type": "String"
 									}
 								}
@@ -187,16 +177,9 @@
 										"value": null,
 										"type": "Int64"
 									},
-									"SCHEMANAME": {
-										"value": {
-											"value": "@item().SCHEMANAME",
-											"type": "Expression"
-										},
-										"type": "String"
-									},
 									"TABLENAME": {
 										"value": {
-											"value": "@item().TABLENAME",
+											"value": "@concat(item(),'.json')",
 											"type": "Expression"
 										},
 										"type": "String"
