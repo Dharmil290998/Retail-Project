@@ -61,7 +61,7 @@
 								"source": {
 									"type": "AzureSqlSource",
 									"sqlReaderQuery": {
-										"value": "Select max((@{item().delta_col} as max from @{item().SCHEMANAME}.@{item().TABLENAME}",
+										"value": "Select max((@{item().DELTACOL} as max from @{item().SCHEMANAME}.@{item().TABLENAME}",
 										"type": "Expression"
 									},
 									"queryTimeout": "02:00:00",
