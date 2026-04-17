@@ -1,0 +1,42 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "adfprojectdemo123"
+		},
+		"DataLakeStorage_accountKey": {
+			"value": ""
+		},
+		"AzureKeyVault_SQLdatabase_properties_typeProperties_baseUrl": {
+			"value": "https://keyvaultproject123.vault.azure.net/"
+		},
+		"AzureKeyVault_properties_typeProperties_baseUrl": {
+			"value": "https://keyvaultretailproject.vault.azure.net/"
+		},
+		"AzureKeyVaultforSQLdatabase_properties_typeProperties_baseUrl": {
+			"value": "https://keyvaultretailproject.vault.azure.net/"
+		},
+		"SqlDatabase1_properties_typeProperties_server": {
+			"value": "dnpserverdemo.database.windows.net"
+		},
+		"SqlDatabase1_properties_typeProperties_database": {
+			"value": "dnpdatabase"
+		},
+		"SqlDatabase1_properties_typeProperties_userName": {
+			"value": "dnpserver"
+		},
+		"DataLakeStorage_properties_typeProperties_url": {
+			"value": "https://project1demo.dfs.core.windows.net/"
+		},
+		"RestService_properties_typeProperties_url": {
+			"value": "https://raw.githubusercontent.com/"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}
