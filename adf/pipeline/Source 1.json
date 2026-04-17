@@ -40,6 +40,10 @@
 				],
 				"userProperties": [],
 				"typeProperties": {
+					"items": {
+						"value": "@activity('Retrieve Data').output.value",
+						"type": "Expression"
+					},
 					"activities": [
 						{
 							"name": "Max_value",
