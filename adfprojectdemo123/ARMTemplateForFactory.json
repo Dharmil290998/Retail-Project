@@ -212,7 +212,7 @@
 									}
 								},
 								{
-									"name": "Copy data1",
+									"name": "Copy data",
 									"type": "Copy",
 									"dependsOn": [
 										{
@@ -295,11 +295,11 @@
 									]
 								},
 								{
-									"name": "Stored procedure1",
+									"name": "Update Watermark Table",
 									"type": "SqlServerStoredProcedure",
 									"dependsOn": [
 										{
-											"activity": "Copy data1",
+											"activity": "Copy data",
 											"dependencyConditions": [
 												"Succeeded"
 											]
@@ -324,6 +324,139 @@
 												"type": "String"
 											},
 											"tablename": {
+												"value": {
+													"value": "@item().TABLENAME",
+													"type": "Expression"
+												},
+												"type": "String"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "SqlDatabase1",
+										"type": "LinkedServiceReference"
+									}
+								},
+								{
+									"name": "Success Logs",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [
+										{
+											"activity": "Copy data",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[USP_LOGDETAILS_ONPREMISES]",
+										"storedProcedureParameters": {
+											"COPYDURATION": {
+												"value": {
+													"value": "@activity('Copy data').output.copyDuration",
+													"type": "Expression"
+												},
+												"type": "Int64"
+											},
+											"ERRORMESSAGE": {
+												"value": null,
+												"type": "String"
+											},
+											"ROWCOPIED": {
+												"value": {
+													"value": "@activity('Copy data').output.rowsCopied",
+													"type": "Expression"
+												},
+												"type": "Int64"
+											},
+											"ROWREAD": {
+												"value": {
+													"value": "@activity('Copy data').output.rowsRead",
+													"type": "Expression"
+												},
+												"type": "Int64"
+											},
+											"SCHEMANAME": {
+												"value": {
+													"value": "@item().SCHEMANAME",
+													"type": "Expression"
+												},
+												"type": "String"
+											},
+											"TABLENAME": {
+												"value": {
+													"value": "@item().TABLENAME",
+													"type": "Expression"
+												},
+												"type": "String"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "SqlDatabase1",
+										"type": "LinkedServiceReference"
+									}
+								},
+								{
+									"name": "Fail Logs",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [
+										{
+											"activity": "Copy data",
+											"dependencyConditions": [
+												"Failed"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[USP_LOGDETAILS_ONPREMISES]",
+										"storedProcedureParameters": {
+											"COPYDURATION": {
+												"value": {
+													"value": "@activity('Copy data').output.copyDuration",
+													"type": "Expression"
+												},
+												"type": "Int64"
+											},
+											"ERRORMESSAGE": {
+												"value": {
+													"value": "@activity('Copy data').Error.message",
+													"type": "Expression"
+												},
+												"type": "String"
+											},
+											"ROWCOPIED": {
+												"value": null,
+												"type": "Int64"
+											},
+											"ROWREAD": {
+												"value": null,
+												"type": "Int64"
+											},
+											"SCHEMANAME": {
+												"value": {
+													"value": "@item().SCHEMANAME",
+													"type": "Expression"
+												},
+												"type": "String"
+											},
+											"TABLENAME": {
 												"value": {
 													"value": "@item().TABLENAME",
 													"type": "Expression"
@@ -700,6 +833,139 @@
 											}
 										}
 									]
+								},
+								{
+									"name": "Success Logs",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [
+										{
+											"activity": "Copy data",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[USP_LOGDETAILS_RESTAPI]",
+										"storedProcedureParameters": {
+											"COPYDURATION": {
+												"value": {
+													"value": "@activity('Copy data').output.copyDuration",
+													"type": "Expression"
+												},
+												"type": "Int64"
+											},
+											"ERRORMESSAGE": {
+												"value": null,
+												"type": "String"
+											},
+											"ROWCOPIED": {
+												"value": {
+													"value": "@activity('Copy data').output.rowsCopied",
+													"type": "Expression"
+												},
+												"type": "Int64"
+											},
+											"ROWREAD": {
+												"value": {
+													"value": "@activity('Copy data').output.rowsRead",
+													"type": "Expression"
+												},
+												"type": "Int64"
+											},
+											"SCHEMANAME": {
+												"value": {
+													"value": "@item().SCHEMANAME",
+													"type": "Expression"
+												},
+												"type": "String"
+											},
+											"TABLENAME": {
+												"value": {
+													"value": "@item().TABLENAME",
+													"type": "Expression"
+												},
+												"type": "String"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "SqlDatabase1",
+										"type": "LinkedServiceReference"
+									}
+								},
+								{
+									"name": "Fail Logs",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [
+										{
+											"activity": "Copy data",
+											"dependencyConditions": [
+												"Failed"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[USP_LOGDETAILS_RESTAPI]",
+										"storedProcedureParameters": {
+											"COPYDURATION": {
+												"value": {
+													"value": "@activity('Copy data').output.copyDuration",
+													"type": "Expression"
+												},
+												"type": "Int64"
+											},
+											"ERRORMESSAGE": {
+												"value": {
+													"value": "@activity('Copy data').Error.message",
+													"type": "Expression"
+												},
+												"type": "String"
+											},
+											"ROWCOPIED": {
+												"value": null,
+												"type": "Int64"
+											},
+											"ROWREAD": {
+												"value": null,
+												"type": "Int64"
+											},
+											"SCHEMANAME": {
+												"value": {
+													"value": "@item().SCHEMANAME",
+													"type": "Expression"
+												},
+												"type": "String"
+											},
+											"TABLENAME": {
+												"value": {
+													"value": "@item().TABLENAME",
+													"type": "Expression"
+												},
+												"type": "String"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "SqlDatabase1",
+										"type": "LinkedServiceReference"
+									}
 								}
 							]
 						}
@@ -722,7 +988,8 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/RestResource1')]",
-				"[concat(variables('factoryId'), '/datasets/Json1')]"
+				"[concat(variables('factoryId'), '/datasets/Json1')]",
+				"[concat(variables('factoryId'), '/linkedServices/SqlDatabase1')]"
 			]
 		},
 		{
