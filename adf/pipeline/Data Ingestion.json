@@ -33,6 +33,62 @@
 					},
 					"waitOnCompletion": true
 				}
+			},
+			{
+				"name": "On-Premises Email Notification ",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "On-premises to ADLS",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"method": "POST",
+					"url": "https://prod-10.canadacentral.logic.azure.com:443/workflows/5da7d52d79da4054a38a02da2415441e/triggers/When_an_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_an_HTTP_request_is_received%2Frun&sv=1.0&sig=SqXIDPPiURy8vktch1UJN7Zk5Lxu4QNZZkqa8v5csKI",
+					"body": {
+						"value": "{\n\"PipelineName\":\"@{pipeline().Pipeline}\",\n\"ErrorMessage\":\"@{activity('On-premises to ADLS').Error.Message}\",\n\"DataFactoryName\":\"@{pipeline().DataFactory}\",\n\"Runid\":\"@{pipeline().RunId}\"\n}",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Rest API Email Notification",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "Rest API to ADLS",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"method": "POST",
+					"url": "https://prod-10.canadacentral.logic.azure.com:443/workflows/5da7d52d79da4054a38a02da2415441e/triggers/When_an_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_an_HTTP_request_is_received%2Frun&sv=1.0&sig=SqXIDPPiURy8vktch1UJN7Zk5Lxu4QNZZkqa8v5csKI",
+					"body": {
+						"value": "{\n\"PipelineName\":\"@{pipeline().Pipeline}\",\n\"ErrorMessage\":\"@{activity('Rest API to ADLS').Error.Message}\",\n\"DataFactoryName\":\"@{pipeline().DataFactory}\",\n\"Runid\":\"@{pipeline().RunId}\"\n}",
+						"type": "Expression"
+					}
+				}
 			}
 		],
 		"annotations": []
