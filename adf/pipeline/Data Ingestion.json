@@ -35,7 +35,7 @@
 				}
 			},
 			{
-				"name": "OnPremises Email Notification ",
+				"name": "Email Notification Onpremises",
 				"type": "WebActivity",
 				"dependsOn": [
 					{
@@ -63,7 +63,7 @@
 				}
 			},
 			{
-				"name": "Rest API Email Notification",
+				"name": "Email Notification Rest API",
 				"type": "WebActivity",
 				"dependsOn": [
 					{
