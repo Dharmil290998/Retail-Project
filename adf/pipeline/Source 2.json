@@ -79,7 +79,9 @@
 			"file": {
 				"type": "Array",
 				"defaultValue": [
-					"[inventory,payment,shipping]"
+					"inventory.json",
+					"payment.json",
+					"shipping.json"
 				]
 			}
 		},
