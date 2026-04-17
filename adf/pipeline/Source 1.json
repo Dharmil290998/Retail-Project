@@ -1,6 +1,24 @@
 {
-	"name": "pipeline1",
+	"name": "Source 1",
 	"properties": {
+		"activities": [
+			{
+				"name": "Retrieve Data",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"firstRowOnly": false
+				}
+			}
+		],
 		"annotations": []
 	}
 }

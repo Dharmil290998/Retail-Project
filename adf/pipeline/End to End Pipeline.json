@@ -12,7 +12,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"pipeline": {
-						"referenceName": "Sources",
+						"referenceName": "Data Ingestion",
 						"type": "PipelineReference"
 					},
 					"waitOnCompletion": true
