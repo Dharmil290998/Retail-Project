@@ -27,6 +27,10 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Source 2",
+						"type": "PipelineReference"
+					},
 					"waitOnCompletion": true
 				}
 			}

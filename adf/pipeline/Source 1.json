@@ -145,7 +145,7 @@
 									"type": "DatasetReference",
 									"parameters": {
 										"folder_name": {
-											"value": "@concat('Sales Project','/',item().FOLDERNAME)",
+											"value": "@concat('Sales Project','/','On-Premises','/',item().FOLDERNAME)",
 											"type": "Expression"
 										},
 										"file_name": {
