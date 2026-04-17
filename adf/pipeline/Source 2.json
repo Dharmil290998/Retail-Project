@@ -52,7 +52,7 @@
 									"type": "DatasetReference",
 									"parameters": {
 										"file_name": {
-											"value": "@item().file",
+											"value": "@concat(item(),'.json')",
 											"type": "Expression"
 										}
 									}
@@ -64,7 +64,11 @@
 									"type": "DatasetReference",
 									"parameters": {
 										"file_name": {
-											"value": "@concat('Rest API','/',item().file)",
+											"value": "@concat(item(),'.json')",
+											"type": "Expression"
+										},
+										"folder_name": {
+											"value": "@concat('Sales Project','/','Rest API','/',item())",
 											"type": "Expression"
 										}
 									}
@@ -79,9 +83,9 @@
 			"file": {
 				"type": "Array",
 				"defaultValue": [
-					"inventory.json",
-					"payment.json",
-					"shipping.json"
+					"inventory",
+					"payment",
+					"shipping"
 				]
 			}
 		},
