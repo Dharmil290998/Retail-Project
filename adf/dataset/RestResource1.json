@@ -14,7 +14,7 @@
 		"type": "RestResource",
 		"typeProperties": {
 			"relativeUrl": {
-				"value": "Dharmil290998/ML_Topics/refs/heads/main/REST API/dataset().file_name.json",
+				"value": "Dharmil290998/ML_Topics/refs/heads/main/REST API/dataset().file_name",
 				"type": "Expression"
 			}
 		},
