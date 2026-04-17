@@ -64,7 +64,7 @@
 									"type": "DatasetReference",
 									"parameters": {
 										"file_name": {
-											"value": "@item().file",
+											"value": "@concat('Rest API','/',item().file)",
 											"type": "Expression"
 										}
 									}
