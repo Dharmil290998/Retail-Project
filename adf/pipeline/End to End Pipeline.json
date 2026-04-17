@@ -1,0 +1,24 @@
+{
+	"name": "End to End Pipeline",
+	"properties": {
+		"activities": [
+			{
+				"name": "Bronze Layer",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Sources",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			}
+		],
+		"annotations": []
+	}
+}
