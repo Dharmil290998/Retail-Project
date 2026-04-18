@@ -20,7 +20,12 @@ bronze_path = f"abfss://{container_name}@{storage_account}.dfs.core.windows.net/
 
 # COMMAND ----------
 
-from pyspark.sql.types import StructType, StructField, DoubleType, TimestampType, LongType, StringType
+# MAGIC %md
+# MAGIC ### Schema
+
+# COMMAND ----------
+
+
 schema = StructType([
     StructField("payment_id", LongType(), True),
     StructField("amount", DoubleType(), True),
@@ -51,6 +56,11 @@ df.columns
 
 # COMMAND ----------
 
+# MAGIC %md
+# MAGIC ### Primary Key Validation
+
+# COMMAND ----------
+
 # PK FILTER (payment_id must be valid)
 df = df.filter(
     col("payment_id").isNotNull() &
@@ -65,6 +75,33 @@ df = df.filter(col("order_id").isNotNull())
 
 # COMMAND ----------
 
+# MAGIC %md
+# MAGIC ### Handling Corrupted Records
+
+# COMMAND ----------
+
+pk_col = "payment_id" 
+
+df_bad = df.filter(col("_corrupt_record").isNotNull()) \
+    .select(
+        col(pk_col),
+        col("_corrupt_record"),
+        current_timestamp().alias("error_time")
+    )
+
+df_bad.write.format("delta").mode("append").saveAsTable("sales.Loginfo.payment_corruptedtable")
+
+# COMMAND ----------
+
+df = df.filter(col("_corrupt_record").isNull()).drop("_corrupt_record")
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ### Business Quality Check
+
+# COMMAND ----------
+
 # BUSINESS RULES
 df = df.filter(col("amount") >= 0)
 
@@ -73,6 +110,19 @@ df = df.filter(col("amount") >= 0)
 # STANDARDIZE VALUES 
 df = df.withColumn("payment_status", upper(trim(col("payment_status")))) \
        .withColumn("payment_method", initcap(trim(col("payment_method"))))
+
+# COMMAND ----------
+
+# ADD DERIVED COLUMN (IMPORTANT FOR ANALYTICS)
+df = df.withColumn(
+    "is_success",
+    when(col("payment_status") == "SUCCESS", 1).otherwise(0)
+)
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ### Removing Duplicates
 
 # COMMAND ----------
 
@@ -89,17 +139,14 @@ df = (
 
 # COMMAND ----------
 
-# ADD DERIVED COLUMN (IMPORTANT FOR ANALYTICS)
-df = df.withColumn(
-    "is_success",
-    when(col("payment_status") == "SUCCESS", 1).otherwise(0)
-)
-
-# COMMAND ----------
-
 # ADD INGESTION TIMESTAMP
 df = df.withColumn("ingestion_timestamp", current_timestamp())
 
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ### Delta Table
 
 # COMMAND ----------
 
@@ -112,3 +159,8 @@ df.write.format("delta") \
     .saveAsTable(silver_table)
 
 print("Silver table created:", silver_table)
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC select * from sales.silver.payment

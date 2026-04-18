@@ -20,12 +20,17 @@ bronze_path = f"abfss://{container_name}@{storage_account}.dfs.core.windows.net/
 
 # COMMAND ----------
 
+# MAGIC %md
+# MAGIC ### Schema
+
+# COMMAND ----------
+
 schema = StructType([
     StructField("inventory_id", LongType(), True),
     StructField("product_id", LongType(), True),
     StructField("store_id", LongType(), True),
     StructField("stock_quantity", IntegerType(), True),
-    StructField("last_restock_date", StringType(), True),   
+    StructField("last_restock_date", DateType(), True),   
     StructField("modified_date", TimestampType(), True),
     StructField("_corrupt_record", StringType(), True)
 ])
@@ -49,6 +54,11 @@ df.columns
 
 # COMMAND ----------
 
+# MAGIC %md
+# MAGIC ### Primary Key Validation
+
+# COMMAND ----------
+
 # PK FILTER (inventory_id must be valid)
 df = df.filter(
     col("inventory_id").isNotNull() &
@@ -58,9 +68,41 @@ df = df.filter(
 
 # COMMAND ----------
 
+# MAGIC %md
+# MAGIC ### Handling Corrupted Records
+
+# COMMAND ----------
+
+pk_col = "inventory_id" 
+
+df_bad = df.filter(col("_corrupt_record").isNotNull()) \
+    .select(
+        col(pk_col),
+        col("_corrupt_record"),
+        current_timestamp().alias("error_time")
+    )
+
+df_bad.write.format("delta").mode("append").saveAsTable("sales.Loginfo.inventory_corruptedtable")
+
+# COMMAND ----------
+
+df = df.filter(col("_corrupt_record").isNull()).drop("_corrupt_record")
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ### Business Quality Check
+
+# COMMAND ----------
+
 # OPTIONAL BUSINESS RULE (remove negative stock)
 df = df.filter(col("stock_quantity") >= 0)
 
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ### Removing Duplicates
 
 # COMMAND ----------
 
@@ -83,6 +125,11 @@ df = df.withColumn("ingestion_timestamp", current_timestamp())
 
 # COMMAND ----------
 
+# MAGIC %md
+# MAGIC ### Delta Table
+
+# COMMAND ----------
+
 # WRITE TO UNITY CATALOG
 silver_table = "sales.silver.inventory"
 
@@ -92,3 +139,8 @@ df.write.format("delta") \
     .saveAsTable(silver_table)
 
 print("Silver table created:", silver_table)
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC select * from sales.silver.inventory

@@ -20,6 +20,11 @@ bronze_path = f"abfss://{container_name}@{storage_account}.dfs.core.windows.net/
 
 # COMMAND ----------
 
+# MAGIC %md
+# MAGIC ### Schema
+
+# COMMAND ----------
+
 schema = StructType([
     StructField("ProductID", IntegerType(), True),
     StructField("ProductName", StringType(), True),
@@ -48,6 +53,11 @@ df.columns
 
 # COMMAND ----------
 
+# MAGIC %md
+# MAGIC ### Primary Key Validation
+
+# COMMAND ----------
+
 
 #  PK FILTER (ProductID must be valid)
 df = df.filter(
@@ -55,6 +65,33 @@ df = df.filter(
     (trim(col("ProductID")) != "") &
     (col("ProductID") != "0")
 )
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ### Handling Corrupted Records
+
+# COMMAND ----------
+
+pk_col = "ProductID" 
+
+df_bad = df.filter(col("_corrupt_record").isNotNull()) \
+    .select(
+        col(pk_col),
+        col("_corrupt_record"),
+        current_timestamp().alias("error_time")
+    )
+
+df_bad.write.format("delta").mode("append").saveAsTable("sales.Loginfo.product_corruptedtable")
+
+# COMMAND ----------
+
+df = df.filter(col("_corrupt_record").isNull()).drop("_corrupt_record")
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ### Business Quality check
 
 # COMMAND ----------
 
@@ -67,6 +104,21 @@ df = df.filter(col("Price") >= 0)
 df = df.withColumn("ProductName", initcap(trim(col("ProductName")))) \
        .withColumn("Category", initcap(trim(col("Category"))))
 
+
+# COMMAND ----------
+
+# ADD DERIVED COLUMN (optional but useful 🚀)
+df = df.withColumn(
+    "price_category",
+    when(col("Price") > 500, "HIGH")
+    .when(col("Price") > 200, "MEDIUM")
+    .otherwise("LOW")
+)
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ### Removing Duplicates
 
 # COMMAND ----------
 
@@ -83,19 +135,13 @@ df = (
 
 # COMMAND ----------
 
-
-# ADD DERIVED COLUMN (optional but useful 🚀)
-df = df.withColumn(
-    "price_category",
-    when(col("Price") > 500, "HIGH")
-    .when(col("Price") > 200, "MEDIUM")
-    .otherwise("LOW")
-)
+# ADD INGESTION TIMESTAMP
+df = df.withColumn("ingestion_timestamp", current_timestamp())
 
 # COMMAND ----------
 
-# ADD INGESTION TIMESTAMP
-df = df.withColumn("ingestion_timestamp", current_timestamp())
+# MAGIC %md
+# MAGIC ### Delta Table
 
 # COMMAND ----------
 
@@ -108,3 +154,8 @@ df.write.format("delta") \
     .saveAsTable(silver_table)
 
 print("Silver table created:", silver_table)
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC select * from sales.silver.products
