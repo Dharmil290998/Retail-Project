@@ -6,6 +6,7 @@
 from pyspark.sql.functions import *
 from pyspark.sql.window import Window
 from pyspark.sql.functions import (col, trim, to_date, row_number, current_timestamp, lit,concat_ws,coalesce)
+from pyspark.sql.types import *
 
 # COMMAND ----------
 
@@ -19,27 +20,32 @@ bronze_path = f"abfss://{container_name}@{storage_account}.dfs.core.windows.net/
 
 # COMMAND ----------
 
+schema = StructType([
+    StructField("shipment_id", LongType(), True),
+    StructField("carrier", StringType(), True),
+    StructField("delivery_date", DateType(), True),
+    StructField("modified_date", TimestampType(), True),
+    StructField("order_id", LongType(), True),
+    StructField("shipment_date", DateType(), True),
+    StructField("shipment_status", StringType(), True)
+])
+
+# COMMAND ----------
 
 # Read Transaction CSV from Bronze
-df = spark.read.format("csv").option("header", "true").load(bronze_path)  
+df = spark.read \
+    .format("json") \
+    .option("header", "true") \
+    .option("mode", "PERMISSIVE") \
+    .option("columnNameOfCorruptRecord", "_corrupt_record") \
+    .schema(schema) \
+    .load(bronze_path)
+
 display(df)
 
 # COMMAND ----------
 
 df.columns
-
-# COMMAND ----------
-
-# CAST DATATYPES
-df = (
-    df.withColumn("shipment_id", col("shipment_id").cast("string"))
-      .withColumn("order_id", col("order_id").cast("string"))
-      .withColumn("shipment_status", col("shipment_status").cast("string"))
-      .withColumn("shipment_date", to_date(col("shipment_date")))
-      .withColumn("delivery_date", to_date(col("delivery_date")))
-      .withColumn("carrier", col("carrier").cast("string"))
-      .withColumn("modified_date", to_timestamp(col("modified_date")))
-)
 
 # COMMAND ----------
 

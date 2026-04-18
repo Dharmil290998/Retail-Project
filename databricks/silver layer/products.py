@@ -6,6 +6,7 @@
 from pyspark.sql.functions import *
 from pyspark.sql.window import Window
 from pyspark.sql.functions import (col, trim, to_date, row_number, current_timestamp, lit,concat_ws,coalesce)
+from pyspark.sql.types import *
 
 # COMMAND ----------
 
@@ -19,25 +20,31 @@ bronze_path = f"abfss://{container_name}@{storage_account}.dfs.core.windows.net/
 
 # COMMAND ----------
 
+schema = StructType([
+    StructField("ProductID", IntegerType(), True),
+    StructField("ProductName", StringType(), True),
+    StructField("Category", StringType(), True),
+    StructField("Price", DoubleType(), True),
+    StructField("ModifiedDate", TimestampType(), True),
+    StructField("_corrupt_record", StringType(), True)   
+])
 
-# Read Transaction CSV from Bronze
-df = spark.read.format("csv").option("header", "true").load(bronze_path)  
+
+# COMMAND ----------
+
+df = spark.read \
+    .format("csv") \
+    .option("header", "true") \
+    .option("mode", "PERMISSIVE") \
+    .option("columnNameOfCorruptRecord", "_corrupt_record") \
+    .schema(schema) \
+    .load(bronze_path)
+
 display(df)
 
 # COMMAND ----------
 
 df.columns
-
-# COMMAND ----------
-
-#  CAST DATATYPES
-df = (
-    df.withColumn("ProductID", col("ProductID").cast("string"))
-      .withColumn("ProductName", col("ProductName").cast("string"))
-      .withColumn("Category", col("Category").cast("string"))
-      .withColumn("Price", col("Price").cast("double"))
-      .withColumn("ModifiedDate", to_timestamp(col("ModifiedDate")))
-)
 
 # COMMAND ----------
 

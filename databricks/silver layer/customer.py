@@ -6,6 +6,7 @@
 from pyspark.sql.functions import *
 from pyspark.sql.window import Window
 from pyspark.sql.functions import (col, trim, to_date, row_number, current_timestamp, lit,concat_ws,coalesce)
+from pyspark.sql.types import StructType, StructField, StringType, IntegerType, TimestampType
 
 # COMMAND ----------
 
@@ -33,21 +34,43 @@ bronze_path = f"abfss://{container_name}@{storage_account}.dfs.core.windows.net/
 
 # COMMAND ----------
 
-# Read Transaction CSV from Bronze
-df = spark.read.format("csv").option("header", "true").load(bronze_path) 
+# 🔹 Step 1: Define schema
+schema = StructType([
+    StructField("CustomerID", IntegerType(), True),
+    StructField("FirstName", StringType(), True),
+    StructField("LastName", StringType(), True),
+    StructField("City", StringType(), True),
+    StructField("Email", StringType(), True),
+    StructField("ModifiedDate", TimestampType(), True),
+    StructField("_corrupt_record", StringType(), True)
+])
+
+# COMMAND ----------
+
+df = spark.read \
+    .format("csv") \
+    .option("header", "true") \
+    .option("mode", "PERMISSIVE") \
+    .option("columnNameOfCorruptRecord", "_corrupt_record") \
+    .schema(schema) \
+    .load(bronze_path)
+
 display(df)
 
 # COMMAND ----------
 
-# CAST DATATYPES
-df = (
-    df.withColumn("CustomerID", col("CustomerID").cast("string"))
-      .withColumn("FirstName", col("FirstName").cast("string"))
-      .withColumn("LastName", col("LastName").cast("string"))
-      .withColumn("City", col("City").cast("string"))
-      .withColumn("Email", col("Email").cast("string"))
-      .withColumn("ModifiedDate", to_timestamp(col("ModifiedDate")))
-)
+expected_cols = [f.name for f in schema.fields]
+actual_cols = df.columns
+
+new_cols = list(set(actual_cols) - set(expected_cols))
+
+if new_cols:
+    print("New columns detected:", new_cols)
+
+    for c in new_cols:
+        df = df.withColumn(c, col(c))
+else:
+    print("No schema drift detected")
 
 # COMMAND ----------
 

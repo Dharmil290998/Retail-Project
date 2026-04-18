@@ -6,6 +6,7 @@
 from pyspark.sql.functions import *
 from pyspark.sql.window import Window
 from pyspark.sql.functions import (col, trim, to_date, row_number, current_timestamp, lit,concat_ws,coalesce)
+from pyspark.sql.types import *
 
 # COMMAND ----------
 
@@ -14,34 +15,39 @@ storage_account = "project1demo"
 container_name = "project1"
 table_name = "payment"
 
-bronze_path = f"abfss://{container_name}@{storage_account}.dfs.core.windows.net/Sales Project/On-Premises/{table_name}/*"
+bronze_path = f"abfss://{container_name}@{storage_account}.dfs.core.windows.net/Sales Project/Rest API/{table_name}/*"
 
 
 # COMMAND ----------
 
+from pyspark.sql.types import StructType, StructField, DoubleType, TimestampType, LongType, StringType
+schema = StructType([
+    StructField("payment_id", LongType(), True),
+    StructField("amount", DoubleType(), True),
+    StructField("modified_date", TimestampType(), True),
+    StructField("order_id", LongType(), True),
+    StructField("payment_method", StringType(), True),
+    StructField("payment_status", StringType(), True),
+    StructField("payment_time", TimestampType(), True),
+    StructField("_corrupt_record", StringType(), True)
+])
+
+# COMMAND ----------
 
 # Read Transaction CSV from Bronze
-df = spark.read.format("csv").option("header", "true").load(bronze_path)  
+df = spark.read \
+    .format("json") \
+    .option("header", "true") \
+    .option("mode", "PERMISSIVE") \
+    .option("columnNameOfCorruptRecord", "_corrupt_record") \
+    .schema(schema) \
+    .load(bronze_path)
+
 display(df)
 
 # COMMAND ----------
 
 df.columns
-
-# COMMAND ----------
-
-
-# CAST DATATYPES
-df = (
-    df.withColumn("payment_id", col("payment_id").cast("string"))
-      .withColumn("order_id", col("order_id").cast("string"))
-      .withColumn("payment_method", col("payment_method").cast("string"))
-      .withColumn("payment_status", col("payment_status").cast("string"))
-      .withColumn("amount", col("amount").cast("double"))
-      .withColumn("payment_time", to_timestamp(col("payment_time")))
-      .withColumn("modified_date", to_timestamp(col("modified_date")))
-)
-
 
 # COMMAND ----------
 

@@ -6,6 +6,7 @@
 from pyspark.sql.functions import *
 from pyspark.sql.window import Window
 from pyspark.sql.functions import (col, trim, to_date, row_number, current_timestamp, lit,concat_ws,coalesce)
+from pyspark.sql.types import *
 
 # COMMAND ----------
 
@@ -19,26 +20,32 @@ bronze_path = f"abfss://{container_name}@{storage_account}.dfs.core.windows.net/
 
 # COMMAND ----------
 
+schema = StructType([
+    StructField("inventory_id", LongType(), True),
+    StructField("product_id", LongType(), True),
+    StructField("store_id", LongType(), True),
+    StructField("stock_quantity", IntegerType(), True),
+    StructField("last_restock_date", StringType(), True),   
+    StructField("modified_date", TimestampType(), True),
+    StructField("_corrupt_record", StringType(), True)
+])
+
+# COMMAND ----------
 
 # Read Transaction CSV from Bronze
-df = spark.read.format("csv").option("header", "true").load(bronze_path)  
+df = spark.read \
+    .format("json") \
+    .option("header", "true") \
+    .option("mode", "PERMISSIVE") \
+    .option("columnNameOfCorruptRecord", "_corrupt_record") \
+    .schema(schema) \
+    .load(bronze_path)
+
 display(df)
 
 # COMMAND ----------
 
 df.columns
-
-# COMMAND ----------
-
-# CAST DATATYPES
-df = (
-    df.withColumn("inventory_id", col("inventory_id").cast("string"))
-      .withColumn("product_id", col("product_id").cast("string"))
-      .withColumn("store_id", col("store_id").cast("string"))
-      .withColumn("stock_quantity", col("stock_quantity").cast("int"))
-      .withColumn("last_restock_date", to_date(col("last_restock_date")))
-      .withColumn("modified_date", to_timestamp(col("modified_date")))
-)
 
 # COMMAND ----------
 
