@@ -28,7 +28,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"pipeline": {
-						"referenceName": "pipeline1",
+						"referenceName": "Silver Transformation",
 						"type": "PipelineReference"
 					},
 					"waitOnCompletion": true
