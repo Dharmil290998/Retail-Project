@@ -1458,6 +1458,13 @@
 													"type": "Expression"
 												},
 												"type": "String"
+											},
+											"LOGTIME": {
+												"value": {
+													"value": "@convertTimeZone(utcNow(),'UTC','Eastern Standard Time')",
+													"type": "Expression"
+												},
+												"type": "Datetime"
 											}
 										}
 									},
@@ -1523,6 +1530,13 @@
 													"type": "Expression"
 												},
 												"type": "String"
+											},
+											"LOGTIME": {
+												"value": {
+													"value": "@convertTimeZone(utcNow(),'UTC','Eastern Standard Time')",
+													"type": "Expression"
+												},
+												"type": "Datetime"
 											}
 										}
 									},
