@@ -99,6 +99,22 @@ df = df.filter(col("_corrupt_record").isNull()).drop("_corrupt_record")
 # COMMAND ----------
 
 # MAGIC %md
+# MAGIC ### Business Quality Check
+
+# COMMAND ----------
+
+df = df.withColumn(
+    "FullName",
+    concat_ws(" ", "FirstName", "LastName")
+)
+
+# COMMAND ----------
+
+df = df.drop("FirstName", "LastName")
+
+# COMMAND ----------
+
+# MAGIC %md
 # MAGIC ### Removing Duplicates
 
 # COMMAND ----------
@@ -141,3 +157,7 @@ print("Silver table created:", silver_table)
 
 # MAGIC %sql
 # MAGIC select * from sales.silver.customer
+
+# COMMAND ----------
+
+
