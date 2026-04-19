@@ -1,0 +1,24 @@
+{
+	"name": "Fact-Dimension Table and Business Aggregations",
+	"properties": {
+		"activities": [
+			{
+				"name": "Fact and Dimension Table",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "pipeline1",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			}
+		],
+		"annotations": []
+	}
+}

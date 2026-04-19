@@ -33,6 +33,22 @@
 					},
 					"waitOnCompletion": true
 				}
+			},
+			{
+				"name": "Gold Layer",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Fact-Dimension Table and Business Aggregations",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
 			}
 		],
 		"annotations": []
