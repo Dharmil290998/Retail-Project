@@ -5,6 +5,8 @@
 			{
 				"name": "On-premises to ADLS",
 				"type": "ExecutePipeline",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Failed",
 				"dependsOn": [],
 				"policy": {
 					"secureInput": false
@@ -37,6 +39,8 @@
 			{
 				"name": "Email Notification Onpremises",
 				"type": "WebActivity",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "On-premises to ADLS",
