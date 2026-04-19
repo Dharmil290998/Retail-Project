@@ -65,6 +65,8 @@
 					{
 						"name": "On-premises to ADLS",
 						"type": "ExecutePipeline",
+						"state": "Inactive",
+						"onInactiveMarkAs": "Failed",
 						"dependsOn": [],
 						"policy": {
 							"secureInput": false
@@ -99,6 +101,8 @@
 					{
 						"name": "Email Notification Onpremises",
 						"type": "WebActivity",
+						"state": "Inactive",
+						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [
 							{
 								"activity": "On-premises to ADLS",
@@ -972,6 +976,13 @@
 													"type": "Expression"
 												},
 												"type": "String"
+											},
+											"LOGTIME": {
+												"value": {
+													"value": "@convertTimeZone(utcNow(),'UTC','Eastern Standard Time')",
+													"type": "Expression"
+												},
+												"type": "Datetime"
 											}
 										}
 									},
@@ -1030,6 +1041,13 @@
 													"type": "Expression"
 												},
 												"type": "String"
+											},
+											"LOGTIME": {
+												"value": {
+													"value": "@convertTimeZone(utcNow(),'UTC','Eastern Standard Time')",
+													"type": "Expression"
+												},
+												"type": "Datetime"
 											}
 										}
 									},
