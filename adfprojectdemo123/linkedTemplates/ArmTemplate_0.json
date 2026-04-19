@@ -11,15 +11,19 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'accountKey' of 'DataLakeStorage'"
 		},
-		"AzureKeyVault_SQLdatabase_properties_typeProperties_baseUrl": {
-			"type": "string",
-			"defaultValue": "https://keyvaultproject123.vault.azure.net/"
-		},
 		"AzureKeyVault_properties_typeProperties_baseUrl": {
 			"type": "string",
 			"defaultValue": "https://keyvaultretailproject.vault.azure.net/"
 		},
+		"AzureKeyVault_SQLdatabase_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://keyvaultproject123.vault.azure.net/"
+		},
 		"AzureKeyVaultforSQLdatabase_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://keyvaultretailproject.vault.azure.net/"
+		},
+		"AzureKeyVaultforadfaccesstoken_properties_typeProperties_baseUrl": {
 			"type": "string",
 			"defaultValue": "https://keyvaultretailproject.vault.azure.net/"
 		},
@@ -49,19 +53,6 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/AzureKeyVault_SQLdatabase')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureKeyVault",
-				"typeProperties": {
-					"baseUrl": "[parameters('AzureKeyVault_SQLdatabase_properties_typeProperties_baseUrl')]"
-				}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/AzureKeyVault')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -75,6 +66,19 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/AzureKeyVault_SQLdatabase')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureKeyVault",
+				"typeProperties": {
+					"baseUrl": "[parameters('AzureKeyVault_SQLdatabase_properties_typeProperties_baseUrl')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/AzureKeyVaultforSQLdatabase')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -83,6 +87,19 @@
 				"type": "AzureKeyVault",
 				"typeProperties": {
 					"baseUrl": "[parameters('AzureKeyVaultforSQLdatabase_properties_typeProperties_baseUrl')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureKeyVaultforadfaccesstoken')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureKeyVault",
+				"typeProperties": {
+					"baseUrl": "[parameters('AzureKeyVaultforadfaccesstoken_properties_typeProperties_baseUrl')]"
 				}
 			},
 			"dependsOn": []
@@ -118,34 +135,6 @@
 				}
 			},
 			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SqlDatabase1')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureSqlDatabase",
-				"typeProperties": {
-					"server": "[parameters('SqlDatabase1_properties_typeProperties_server')]",
-					"database": "[parameters('SqlDatabase1_properties_typeProperties_database')]",
-					"encrypt": "optional",
-					"trustServerCertificate": false,
-					"authenticationType": "SQL",
-					"userName": "[parameters('SqlDatabase1_properties_typeProperties_userName')]",
-					"password": {
-						"type": "AzureKeyVaultSecret",
-						"store": {
-							"referenceName": "AzureKeyVault",
-							"type": "LinkedServiceReference"
-						},
-						"secretName": "sqldatabasesecret"
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureKeyVault')]"
-			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/DelimitedText1')]",
@@ -191,34 +180,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/RestResource1')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "RestService",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"file_name": {
-						"type": "string"
-					}
-				},
-				"annotations": [],
-				"type": "RestResource",
-				"typeProperties": {
-					"relativeUrl": {
-						"value": "Dharmil290998/ML_Topics/refs/heads/main/REST API/@{dataset().file_name}",
-						"type": "Expression"
-					}
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/RestService')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/Json1')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -258,144 +219,266 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/AzureSqlTable1')]",
+			"name": "[concat(parameters('factoryName'), '/RestResource1')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "SqlDatabase1",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "ID",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "TABLENAME",
-						"type": "varchar"
-					},
-					{
-						"name": "SCHEMANAME",
-						"type": "varchar"
-					},
-					{
-						"name": "FOLDERNAME",
-						"type": "varchar"
-					},
-					{
-						"name": "FILENAME",
-						"type": "varchar"
-					},
-					{
-						"name": "DELTACOL",
-						"type": "varchar"
-					},
-					{
-						"name": "LASTPROCESSEDVALUE",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					}
-				],
-				"typeProperties": {
-					"schema": "sales",
-					"table": "WATERMARKTABLE"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/SqlDatabase1')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/AzureSqlTable2')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "SqlDatabase1",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "ID",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "TABLENAME",
-						"type": "varchar"
-					},
-					{
-						"name": "SCHEMANAME",
-						"type": "varchar"
-					},
-					{
-						"name": "FOLDERNAME",
-						"type": "varchar"
-					},
-					{
-						"name": "FILENAME",
-						"type": "varchar"
-					},
-					{
-						"name": "DELTACOL",
-						"type": "varchar"
-					},
-					{
-						"name": "LASTPROCESSEDVALUE",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					}
-				],
-				"typeProperties": {
-					"schema": "sales",
-					"table": "WATERMARKTABLE"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/SqlDatabase1')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SqlTable2')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "SqlDatabase1",
+					"referenceName": "RestService",
 					"type": "LinkedServiceReference"
 				},
 				"parameters": {
-					"schema_name": {
-						"type": "string"
-					},
-					"table_name": {
+					"file_name": {
 						"type": "string"
 					}
 				},
 				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [],
+				"type": "RestResource",
 				"typeProperties": {
-					"schema": {
-						"value": "@dataset().schema_name",
+					"relativeUrl": {
+						"value": "Dharmil290998/ML_Topics/refs/heads/main/REST API/@{dataset().file_name}",
 						"type": "Expression"
-					},
-					"table": {
-						"value": "@dataset().table_name",
-						"type": "Expression"
+					}
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/RestService')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SqlDatabase1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"server": "[parameters('SqlDatabase1_properties_typeProperties_server')]",
+					"database": "[parameters('SqlDatabase1_properties_typeProperties_database')]",
+					"encrypt": "optional",
+					"trustServerCertificate": false,
+					"authenticationType": "SQL",
+					"userName": "[parameters('SqlDatabase1_properties_typeProperties_userName')]",
+					"password": {
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "AzureKeyVault",
+							"type": "LinkedServiceReference"
+						},
+						"secretName": "sqldatabasesecret"
 					}
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/SqlDatabase1')]"
+				"[concat(variables('factoryId'), '/linkedServices/AzureKeyVault')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureDatabricks1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureDatabricks",
+				"typeProperties": {
+					"domain": "https://adb-7405604851752252.12.azuredatabricks.net",
+					"accessToken": {
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "AzureKeyVault",
+							"type": "LinkedServiceReference"
+						},
+						"secretName": "databricksnotebook"
+					},
+					"newClusterNodeType": "Standard_D4ds_v5",
+					"newClusterNumOfWorker": "1",
+					"newClusterSparkEnvVars": {
+						"PYSPARK_PYTHON": "/databricks/python3/bin/python3"
+					},
+					"newClusterVersion": "17.3.x-scala2.13",
+					"clusterOption": "Fixed",
+					"newClusterInitScripts": []
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureKeyVault')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Silver Transformation')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Customers",
+						"type": "DatabricksNotebook",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/pateldharmilkumar@gmail.com/Retail-Project/databricks/silver layer/customer"
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricks1",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "Orders",
+						"type": "DatabricksNotebook",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/pateldharmilkumar@gmail.com/Retail-Project/databricks/silver layer/orders"
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricks1",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "OrderDetails",
+						"type": "DatabricksNotebook",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/pateldharmilkumar@gmail.com/Retail-Project/databricks/silver layer/orderdetails"
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricks1",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "Products",
+						"type": "DatabricksNotebook",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/pateldharmilkumar@gmail.com/Retail-Project/databricks/silver layer/products"
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricks1",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "Stores",
+						"type": "DatabricksNotebook",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/pateldharmilkumar@gmail.com/Retail-Project/databricks/silver layer/stores"
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricks1",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "Inventory",
+						"type": "DatabricksNotebook",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/pateldharmilkumar@gmail.com/Retail-Project/databricks/silver layer/inventory"
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricks1",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "Payment",
+						"type": "DatabricksNotebook",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/pateldharmilkumar@gmail.com/Retail-Project/databricks/silver layer/payment"
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricks1",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "Shipment",
+						"type": "DatabricksNotebook",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/pateldharmilkumar@gmail.com/Retail-Project/databricks/silver layer/shipment"
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricks1",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDatabricks1')]"
 			]
 		},
 		{
@@ -618,6 +701,147 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/RestResource1')]",
 				"[concat(variables('factoryId'), '/datasets/Json1')]",
+				"[concat(variables('factoryId'), '/linkedServices/SqlDatabase1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSqlTable1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "SqlDatabase1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "TABLENAME",
+						"type": "varchar"
+					},
+					{
+						"name": "SCHEMANAME",
+						"type": "varchar"
+					},
+					{
+						"name": "FOLDERNAME",
+						"type": "varchar"
+					},
+					{
+						"name": "FILENAME",
+						"type": "varchar"
+					},
+					{
+						"name": "DELTACOL",
+						"type": "varchar"
+					},
+					{
+						"name": "LASTPROCESSEDVALUE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "sales",
+					"table": "WATERMARKTABLE"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/SqlDatabase1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSqlTable2')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "SqlDatabase1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "TABLENAME",
+						"type": "varchar"
+					},
+					{
+						"name": "SCHEMANAME",
+						"type": "varchar"
+					},
+					{
+						"name": "FOLDERNAME",
+						"type": "varchar"
+					},
+					{
+						"name": "FILENAME",
+						"type": "varchar"
+					},
+					{
+						"name": "DELTACOL",
+						"type": "varchar"
+					},
+					{
+						"name": "LASTPROCESSEDVALUE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "sales",
+					"table": "WATERMARKTABLE"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/SqlDatabase1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SqlTable2')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "SqlDatabase1",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"schema_name": {
+						"type": "string"
+					},
+					"table_name": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().schema_name",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().table_name",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/SqlDatabase1')]"
 			]
 		},
@@ -1107,6 +1331,23 @@
 							"waitOnCompletion": true,
 							"parameters": {}
 						}
+					},
+					{
+						"name": "Silver Layer",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"policy": {
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Silver Transformation",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
 					}
 				],
 				"policy": {
@@ -1115,7 +1356,8 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/Data Ingestion')]"
+				"[concat(variables('factoryId'), '/pipelines/Data Ingestion')]",
+				"[concat(variables('factoryId'), '/pipelines/Silver Transformation')]"
 			]
 		}
 	]

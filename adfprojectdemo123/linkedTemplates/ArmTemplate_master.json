@@ -11,17 +11,29 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'accountKey' of 'DataLakeStorage'"
 		},
-		"AzureKeyVault_SQLdatabase_properties_typeProperties_baseUrl": {
-			"type": "string",
-			"defaultValue": "https://keyvaultproject123.vault.azure.net/"
-		},
 		"AzureKeyVault_properties_typeProperties_baseUrl": {
 			"type": "string",
 			"defaultValue": "https://keyvaultretailproject.vault.azure.net/"
 		},
+		"AzureKeyVault_SQLdatabase_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://keyvaultproject123.vault.azure.net/"
+		},
 		"AzureKeyVaultforSQLdatabase_properties_typeProperties_baseUrl": {
 			"type": "string",
 			"defaultValue": "https://keyvaultretailproject.vault.azure.net/"
+		},
+		"AzureKeyVaultforadfaccesstoken_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://keyvaultretailproject.vault.azure.net/"
+		},
+		"DataLakeStorage_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://project1demo.dfs.core.windows.net/"
+		},
+		"RestService_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://raw.githubusercontent.com/"
 		},
 		"SqlDatabase1_properties_typeProperties_server": {
 			"type": "string",
@@ -34,14 +46,6 @@
 		"SqlDatabase1_properties_typeProperties_userName": {
 			"type": "string",
 			"defaultValue": "dnpserver"
-		},
-		"DataLakeStorage_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://project1demo.dfs.core.windows.net/"
-		},
-		"RestService_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://raw.githubusercontent.com/"
 		},
 		"containerUri": {
 			"type": "string",
@@ -73,14 +77,17 @@
 					"DataLakeStorage_accountKey": {
 						"value": "[parameters('DataLakeStorage_accountKey')]"
 					},
-					"AzureKeyVault_SQLdatabase_properties_typeProperties_baseUrl": {
-						"value": "[parameters('AzureKeyVault_SQLdatabase_properties_typeProperties_baseUrl')]"
-					},
 					"AzureKeyVault_properties_typeProperties_baseUrl": {
 						"value": "[parameters('AzureKeyVault_properties_typeProperties_baseUrl')]"
 					},
+					"AzureKeyVault_SQLdatabase_properties_typeProperties_baseUrl": {
+						"value": "[parameters('AzureKeyVault_SQLdatabase_properties_typeProperties_baseUrl')]"
+					},
 					"AzureKeyVaultforSQLdatabase_properties_typeProperties_baseUrl": {
 						"value": "[parameters('AzureKeyVaultforSQLdatabase_properties_typeProperties_baseUrl')]"
+					},
+					"AzureKeyVaultforadfaccesstoken_properties_typeProperties_baseUrl": {
+						"value": "[parameters('AzureKeyVaultforadfaccesstoken_properties_typeProperties_baseUrl')]"
 					},
 					"DataLakeStorage_properties_typeProperties_url": {
 						"value": "[parameters('DataLakeStorage_properties_typeProperties_url')]"
