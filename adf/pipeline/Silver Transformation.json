@@ -25,7 +25,7 @@
 					{
 						"activity": "Silver Transformation",
 						"dependencyConditions": [
-							"Succeeded"
+							"Failed"
 						]
 					}
 				],
