@@ -128,6 +128,10 @@
 											"type": "Expression"
 										},
 										"type": "String"
+									},
+									"LOGTIME": {
+										"value": "@convertTimeZone(utcNow(),'UTC','Eastern Standard Time')",
+										"type": "Datetime"
 									}
 								}
 							},
@@ -186,6 +190,10 @@
 											"type": "Expression"
 										},
 										"type": "String"
+									},
+									"LOGTIME": {
+										"value": "@convertTimeZone(utcNow(),'UTC','Eastern Standard Time')",
+										"type": "Datetime"
 									}
 								}
 							},
