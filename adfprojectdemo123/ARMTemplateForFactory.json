@@ -297,6 +297,64 @@
 							"referenceName": "AzureDatabricks1",
 							"type": "LinkedServiceReference"
 						}
+					},
+					{
+						"name": "Email Notification Business Aggregations",
+						"type": "WebActivity",
+						"dependsOn": [
+							{
+								"activity": "Business Aggregations",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"method": "POST",
+							"headers": {},
+							"url": "https://prod-10.canadacentral.logic.azure.com:443/workflows/5da7d52d79da4054a38a02da2415441e/triggers/When_an_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_an_HTTP_request_is_received%2Frun&sv=1.0&sig=SqXIDPPiURy8vktch1UJN7Zk5Lxu4QNZZkqa8v5csKI",
+							"body": {
+								"value": "{\n  \"PipelineName\":\"@{pipeline().Pipeline}\",\n  \"ErrorMessage\":\"@{coalesce(string(activity('Business Aggregations').error.message),'No error message available')}\",\n  \"DataFactoryName\":\"@{pipeline().DataFactory}\",\n  \"Runid\":\"@{pipeline().RunId}\",\n  \"SourceType\": \"Databricks - Gold Layer\",\n  \"Message\": \"Failure in Business Aggregations (Gold Layer)\",\n  \"ActivityName\": \"Business Aggregations\"\n}",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Email Notification Fact-Dim Table",
+						"type": "WebActivity",
+						"dependsOn": [
+							{
+								"activity": "Fact and Dimension Table",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"method": "POST",
+							"headers": {},
+							"url": "https://prod-10.canadacentral.logic.azure.com:443/workflows/5da7d52d79da4054a38a02da2415441e/triggers/When_an_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_an_HTTP_request_is_received%2Frun&sv=1.0&sig=SqXIDPPiURy8vktch1UJN7Zk5Lxu4QNZZkqa8v5csKI",
+							"body": {
+								"value": "{\n  \"PipelineName\":\"@{pipeline().Pipeline}\",\n  \"ErrorMessage\":\"@{coalesce(string(activity('Fact and Dimension Table').error.message),'No error message available')}\",\n  \"DataFactoryName\":\"@{pipeline().DataFactory}\",\n  \"Runid\":\"@{pipeline().RunId}\",\n  \"SourceType\": \"Databricks - Gold Layer\",\n  \"Message\": \"Failure in Fact and Dimension Table creation\",\n  \"ActivityName\": \"Fact and Dimension Table\"\n}",
+								"type": "Expression"
+							}
+						}
 					}
 				],
 				"policy": {
@@ -311,6 +369,68 @@
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/Silver Transformation')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Silver Transformation",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"policy": {
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Silver Transformations",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Email Notification Transformations",
+						"type": "WebActivity",
+						"dependsOn": [
+							{
+								"activity": "Silver Transformation",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"method": "POST",
+							"headers": {},
+							"url": "https://prod-10.canadacentral.logic.azure.com:443/workflows/5da7d52d79da4054a38a02da2415441e/triggers/When_an_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_an_HTTP_request_is_received%2Frun&sv=1.0&sig=SqXIDPPiURy8vktch1UJN7Zk5Lxu4QNZZkqa8v5csKI",
+							"body": {
+								"value": "{\n  \"PipelineName\":\"@{pipeline().Pipeline}\",\n  \"ErrorMessage\":\"@{coalesce(string(activity('Silver Transformation').error.message),'No error message available')}\",\n  \"DataFactoryName\":\"@{pipeline().DataFactory}\",\n  \"Runid\":\"@{pipeline().RunId}\",\n  \"SourceType\": \"Databricks / Silver Layer\",\n  \"Message\": \"Failure in Silver Transformation pipeline\",\n  \"ActivityName\": \"Silver Transformation\"\n}",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/Silver Transformations')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Silver Transformations')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {

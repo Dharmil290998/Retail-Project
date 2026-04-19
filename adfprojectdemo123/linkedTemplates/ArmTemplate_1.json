@@ -13,6 +13,112 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/Data Ingestion')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "On-premises to ADLS",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"policy": {
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Source 1",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Rest API to ADLS",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"policy": {
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Source 2",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Email Notification Onpremises",
+						"type": "WebActivity",
+						"dependsOn": [
+							{
+								"activity": "On-premises to ADLS",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"method": "POST",
+							"headers": {},
+							"url": "https://prod-10.canadacentral.logic.azure.com:443/workflows/5da7d52d79da4054a38a02da2415441e/triggers/When_an_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_an_HTTP_request_is_received%2Frun&sv=1.0&sig=SqXIDPPiURy8vktch1UJN7Zk5Lxu4QNZZkqa8v5csKI",
+							"body": {
+								"value": "{\n\"PipelineName\":\"@{pipeline().Pipeline}\",\n\"ErrorMessage\":\"@{coalesce(string(activity('On-premises to ADLS').error.message),'No error message available')}\",\n\"DataFactoryName\":\"@{pipeline().DataFactory}\",\n\"Runid\":\"@{pipeline().RunId}\",\n\"SourceType\": \"On-Prem SQL Server\",\n\"Message\": \"Failure in On-Premises ingestion pipeline\"\n}",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Email Notification Rest API",
+						"type": "WebActivity",
+						"dependsOn": [
+							{
+								"activity": "Rest API to ADLS",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"method": "POST",
+							"headers": {},
+							"url": "https://prod-10.canadacentral.logic.azure.com:443/workflows/5da7d52d79da4054a38a02da2415441e/triggers/When_an_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_an_HTTP_request_is_received%2Frun&sv=1.0&sig=SqXIDPPiURy8vktch1UJN7Zk5Lxu4QNZZkqa8v5csKI",
+							"body": {
+								"value": "{\n  \"PipelineName\":\"@{pipeline().Pipeline}\",\n  \"ErrorMessage\":\"@{coalesce(string(activity('Rest API to ADLS').error.message),'No error message available')}\",\n  \"DataFactoryName\":\"@{pipeline().DataFactory}\",\n  \"Runid\":\"@{pipeline().RunId}\",\n  \"SourceType\": \"REST API\",\n  \"Message\": \"Failure in REST API ingestion pipeline\",\n  \"ActivityName\": \"Rest API to ADLS\"\n}",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/End to End Pipeline')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -89,7 +195,9 @@
 				},
 				"annotations": []
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/Data Ingestion')]"
+			]
 		}
 	]
 }
