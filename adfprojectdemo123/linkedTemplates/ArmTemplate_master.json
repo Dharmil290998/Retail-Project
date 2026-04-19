@@ -11,6 +11,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'accountKey' of 'DataLakeStorage'"
 		},
+		"AzureDatabricks1_properties_typeProperties_existingClusterId": {
+			"type": "string",
+			"defaultValue": "0419-212853-pmd2lmfu"
+		},
 		"AzureKeyVault_properties_typeProperties_baseUrl": {
 			"type": "string",
 			"defaultValue": "https://keyvaultretailproject.vault.azure.net/"
@@ -94,6 +98,9 @@
 					},
 					"RestService_properties_typeProperties_url": {
 						"value": "[parameters('RestService_properties_typeProperties_url')]"
+					},
+					"AzureDatabricks1_properties_typeProperties_existingClusterId": {
+						"value": "[parameters('AzureDatabricks1_properties_typeProperties_existingClusterId')]"
 					},
 					"SqlDatabase1_properties_typeProperties_server": {
 						"value": "[parameters('SqlDatabase1_properties_typeProperties_server')]"

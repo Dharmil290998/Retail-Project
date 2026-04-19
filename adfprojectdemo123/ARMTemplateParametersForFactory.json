@@ -8,6 +8,9 @@
 		"DataLakeStorage_accountKey": {
 			"value": ""
 		},
+		"AzureDatabricks1_properties_typeProperties_existingClusterId": {
+			"value": "0419-212853-pmd2lmfu"
+		},
 		"AzureKeyVault_properties_typeProperties_baseUrl": {
 			"value": "https://keyvaultretailproject.vault.azure.net/"
 		},

@@ -11,6 +11,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'accountKey' of 'DataLakeStorage'"
 		},
+		"AzureDatabricks1_properties_typeProperties_existingClusterId": {
+			"type": "string",
+			"defaultValue": "0419-212853-pmd2lmfu"
+		},
 		"AzureKeyVault_properties_typeProperties_baseUrl": {
 			"type": "string",
 			"defaultValue": "https://keyvaultretailproject.vault.azure.net/"
@@ -1483,14 +1487,7 @@
 						},
 						"secretName": "databricksnotebook"
 					},
-					"newClusterNodeType": "Standard_D4ds_v5",
-					"newClusterNumOfWorker": "1",
-					"newClusterSparkEnvVars": {
-						"PYSPARK_PYTHON": "/databricks/python3/bin/python3"
-					},
-					"newClusterVersion": "17.3.x-scala2.13",
-					"clusterOption": "Fixed",
-					"newClusterInitScripts": []
+					"existingClusterId": "[parameters('AzureDatabricks1_properties_typeProperties_existingClusterId')]"
 				}
 			},
 			"dependsOn": [
