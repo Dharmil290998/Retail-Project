@@ -8,10 +8,11 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - '.github/workflows/*'
 
 jobs:
 
-  # 🔷 DEV DEPLOYMENT
   deploy-dev:
     runs-on: ubuntu-latest
 
@@ -47,7 +48,6 @@ jobs:
           deploymentName: adf-dev-deployment
 
 
-  # 🔷 TEST DEPLOYMENT (runs AFTER DEV)
   deploy-test:
     runs-on: ubuntu-latest
     needs: deploy-dev
@@ -84,7 +84,6 @@ jobs:
           deploymentName: adf-test-deployment
 
 
-  # 🔷 PROD DEPLOYMENT (runs AFTER TEST)
   deploy-prod:
     runs-on: ubuntu-latest
     needs: deploy-test
