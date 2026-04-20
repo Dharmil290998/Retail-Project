@@ -1,9 +1,13 @@
 name: ADF CI/CD Pipeline
 
+concurrency:
+  group: adf-cicd
+  cancel-in-progress: true
+
 on:
   push:
     branches:
-      - main   # trigger everything from main
+      - main
 
 jobs:
 
@@ -72,7 +76,7 @@ jobs:
       - name: Deploy TEST
         uses: azure/arm-deploy@v1
         with:
-          resourceGroupName: ${{ secrets.AZURE_RG_DEV }}   # ✅ SAME RG
+          resourceGroupName: ${{ secrets.AZURE_RG_DEV }}
           template: ./adf_publish/adfprojectdemo123/ARMTemplateForFactory.json
           parameters: >
             ./adf_publish/adfprojectdemo123/ARMTemplateParametersForFactory.json
@@ -109,7 +113,7 @@ jobs:
       - name: Deploy PROD
         uses: azure/arm-deploy@v1
         with:
-          resourceGroupName: ${{ secrets.AZURE_RG_DEV }}   # ✅ SAME RG
+          resourceGroupName: ${{ secrets.AZURE_RG_DEV }}
           template: ./adf_publish/adfprojectdemo123/ARMTemplateForFactory.json
           parameters: >
             ./adf_publish/adfprojectdemo123/ARMTemplateParametersForFactory.json
