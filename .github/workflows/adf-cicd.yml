@@ -13,8 +13,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout main
         uses: actions/checkout@v3
+
+      - name: Checkout adf_publish
+        uses: actions/checkout@v3
+        with:
+          ref: adf_publish
+          path: adf_publish
 
       - name: Azure Login
         uses: azure/login@v1
@@ -43,8 +49,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout main
         uses: actions/checkout@v3
+
+      - name: Checkout adf_publish
+        uses: actions/checkout@v3
+        with:
+          ref: adf_publish
+          path: adf_publish
 
       - name: Azure Login
         uses: azure/login@v1
@@ -73,8 +85,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout main
         uses: actions/checkout@v3
+
+      - name: Checkout adf_publish
+        uses: actions/checkout@v3
+        with:
+          ref: adf_publish
+          path: adf_publish
 
       - name: Azure Login
         uses: azure/login@v1
