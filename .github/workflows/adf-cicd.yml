@@ -28,9 +28,12 @@ jobs:
         uses: azure/arm-deploy@v1
         with:
           resourceGroupName: ${{ secrets.AZURE_RG_DEV }}
-          template: ./adf/ARMTemplateForFactory.json
-          parameters: ./config/dev.json
+          template: ./adf_publish/adfprojectdemo123/ARMTemplateForFactory.json
+          parameters: >
+            ./adf_publish/adfprojectdemo123/ARMTemplateParametersForFactory.json
+            factoryName=adf-dev-dharmil
           deploymentName: adf-dev-deployment
+
 
   deploy-test:
     if: github.ref == 'refs/heads/test'
@@ -52,9 +55,12 @@ jobs:
         uses: azure/arm-deploy@v1
         with:
           resourceGroupName: ${{ secrets.AZURE_RG_TEST }}
-          template: ./adf/ARMTemplateForFactory.json
-          parameters: ./config/test.json
+          template: ./adf_publish/adfprojectdemo123/ARMTemplateForFactory.json
+          parameters: >
+            ./adf_publish/adfprojectdemo123/ARMTemplateParametersForFactory.json
+            factoryName=adf-test-dharmil
           deploymentName: adf-test-deployment
+
 
   deploy-prod:
     if: github.ref == 'refs/heads/prod'
@@ -76,6 +82,8 @@ jobs:
         uses: azure/arm-deploy@v1
         with:
           resourceGroupName: ${{ secrets.AZURE_RG_PROD }}
-          template: ./adf/ARMTemplateForFactory.json
-          parameters: ./config/prod.json
+          template: ./adf_publish/adfprojectdemo123/ARMTemplateForFactory.json
+          parameters: >
+            ./adf_publish/adfprojectdemo123/ARMTemplateParametersForFactory.json
+            factoryName=adf-prod-dharmil
           deploymentName: adf-prod-deployment
