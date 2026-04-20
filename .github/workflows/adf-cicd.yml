@@ -40,7 +40,7 @@ jobs:
           template: ./adf_publish/adfprojectdemo123/ARMTemplateForFactory.json
           parameters: >
             ./adf_publish/adfprojectdemo123/ARMTemplateParametersForFactory.json
-            factoryName=adf-dev-dharmil
+            factoryName=adfprojectdemo123
           deploymentName: adf-dev-deployment
 
 
@@ -76,7 +76,7 @@ jobs:
           template: ./adf_publish/adfprojectdemo123/ARMTemplateForFactory.json
           parameters: >
             ./adf_publish/adfprojectdemo123/ARMTemplateParametersForFactory.json
-            factoryName=adf-test-dharmil
+            factoryName=adfprojectdemo123
           deploymentName: adf-test-deployment
 
 
@@ -112,5 +112,5 @@ jobs:
           template: ./adf_publish/adfprojectdemo123/ARMTemplateForFactory.json
           parameters: >
             ./adf_publish/adfprojectdemo123/ARMTemplateParametersForFactory.json
-            factoryName=adf-prod-dharmil
+            factoryName=adfprojectdemo123
           deploymentName: adf-prod-deployment
