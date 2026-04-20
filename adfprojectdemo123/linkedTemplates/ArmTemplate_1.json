@@ -119,7 +119,7 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/End to End Retail Pipeline')]",
+			"name": "[concat(parameters('factoryName'), '/End to End Pipeline')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
