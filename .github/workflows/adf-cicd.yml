@@ -46,7 +46,7 @@ jobs:
   # 🔷 TEST DEPLOYMENT (runs AFTER DEV)
   deploy-test:
     runs-on: ubuntu-latest
-    needs: deploy-dev   # 👈 dependency
+    needs: deploy-dev
 
     steps:
       - name: Checkout main
@@ -72,7 +72,7 @@ jobs:
       - name: Deploy TEST
         uses: azure/arm-deploy@v1
         with:
-          resourceGroupName: ${{ secrets.AZURE_RG_TEST }}
+          resourceGroupName: ${{ secrets.AZURE_RG_DEV }}   # ✅ SAME RG
           template: ./adf_publish/adfprojectdemo123/ARMTemplateForFactory.json
           parameters: >
             ./adf_publish/adfprojectdemo123/ARMTemplateParametersForFactory.json
@@ -83,7 +83,7 @@ jobs:
   # 🔷 PROD DEPLOYMENT (runs AFTER TEST)
   deploy-prod:
     runs-on: ubuntu-latest
-    needs: deploy-test   # 👈 dependency
+    needs: deploy-test
 
     steps:
       - name: Checkout main
@@ -109,7 +109,7 @@ jobs:
       - name: Deploy PROD
         uses: azure/arm-deploy@v1
         with:
-          resourceGroupName: ${{ secrets.AZURE_RG_PROD }}
+          resourceGroupName: ${{ secrets.AZURE_RG_DEV }}   # ✅ SAME RG
           template: ./adf_publish/adfprojectdemo123/ARMTemplateForFactory.json
           parameters: >
             ./adf_publish/adfprojectdemo123/ARMTemplateParametersForFactory.json
