@@ -3,13 +3,12 @@ name: ADF CI/CD Pipeline
 on:
   push:
     branches:
-      - main
-      - test
-      - prod
+      - main   # trigger everything from main
 
 jobs:
+
+  # 🔷 DEV DEPLOYMENT
   deploy-dev:
-    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
 
     steps:
@@ -44,9 +43,10 @@ jobs:
           deploymentName: adf-dev-deployment
 
 
+  # 🔷 TEST DEPLOYMENT (runs AFTER DEV)
   deploy-test:
-    if: github.ref == 'refs/heads/test'
     runs-on: ubuntu-latest
+    needs: deploy-dev   # 👈 dependency
 
     steps:
       - name: Checkout main
@@ -80,9 +80,10 @@ jobs:
           deploymentName: adf-test-deployment
 
 
+  # 🔷 PROD DEPLOYMENT (runs AFTER TEST)
   deploy-prod:
-    if: github.ref == 'refs/heads/prod'
     runs-on: ubuntu-latest
+    needs: deploy-test   # 👈 dependency
 
     steps:
       - name: Checkout main
