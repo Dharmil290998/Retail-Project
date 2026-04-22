@@ -129,7 +129,7 @@
 					"method": "POST",
 					"url": "https://prod-10.canadacentral.logic.azure.com:443/workflows/5da7d52d79da4054a38a02da2415441e/triggers/When_an_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_an_HTTP_request_is_received%2Frun&sv=1.0&sig=SqXIDPPiURy8vktch1UJN7Zk5Lxu4QNZZkqa8v5csKI",
 					"body": {
-						"value": "{\n  \"PipelineName\":\"@{pipeline().Pipeline}\",\n  \"ErrorMessage\":\"@{coalesce(string(activity('Monthly Events').error.message),'No error message available')}\",\n  \"DataFactoryName\":\"@{pipeline().DataFactory}\",\n  \"Runid\":\"@{pipeline().RunId}\",\n  \"SourceType\": \"Storage Event Trigger\",\n  \"Message\": \"Failure in Storage Event Trigger pipeline\",\n  \"ActivityName\": \"Storage Event Trigger\"\n}",
+						"value": "{\n  \"PipelineName\":\"@{pipeline().Pipeline}\",\n  \"ErrorMessage\":\"@{if(equals(activity('Monthly Events').status,'Failed'), string(activity('Monthly Events').error.message), 'No error message available')}\",\n  \"DataFactoryName\":\"@{pipeline().DataFactory}\",\n  \"Runid\":\"@{pipeline().RunId}\",\n  \"SourceType\": \"Storage Event Trigger\",\n  \"Message\": \"Failure in Storage Event Trigger pipeline\",\n  \"ActivityName\": \"Storage Event Trigger\"\n}",
 						"type": "Expression"
 					}
 				}
