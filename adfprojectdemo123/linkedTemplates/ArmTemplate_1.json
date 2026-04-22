@@ -13,6 +13,792 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/Storage Event Trigger')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Get Metadata",
+						"type": "GetMetadata",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "DelimitedText2",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"fieldList": [
+								"childItems"
+							],
+							"storeSettings": {
+								"type": "AzureBlobStorageReadSettings",
+								"enablePartitionDiscovery": false
+							},
+							"formatSettings": {
+								"type": "DelimitedTextReadSettings"
+							}
+						}
+					},
+					{
+						"name": "ForEach1",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Get Metadata",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Get Metadata').output.childItems",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "Set variable",
+									"type": "SetVariable",
+									"dependsOn": [],
+									"policy": {
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "file_name",
+										"value": {
+											"value": "@item().name",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "Lookup",
+									"type": "Lookup",
+									"dependsOn": [
+										{
+											"activity": "Set variable",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "DelimitedTextSource",
+											"storeSettings": {
+												"type": "AzureBlobStorageReadSettings",
+												"recursive": true,
+												"wildcardFileName": {
+													"value": "@variables('file_name')",
+													"type": "Expression"
+												},
+												"enablePartitionDiscovery": false
+											},
+											"formatSettings": {
+												"type": "DelimitedTextReadSettings"
+											}
+										},
+										"dataset": {
+											"referenceName": "DelimitedText2",
+											"type": "DatasetReference",
+											"parameters": {}
+										},
+										"firstRowOnly": false
+									}
+								},
+								{
+									"name": "If Condition",
+									"type": "IfCondition",
+									"dependsOn": [
+										{
+											"activity": "Lookup",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"expression": {
+											"value": "@greater(activity('Lookup').output.count,0)",
+											"type": "Expression"
+										},
+										"ifFalseActivities": [
+											{
+												"name": "Delete",
+												"type": "Delete",
+												"dependsOn": [],
+												"policy": {
+													"timeout": "0.12:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"dataset": {
+														"referenceName": "DelimitedText2",
+														"type": "DatasetReference",
+														"parameters": {}
+													},
+													"enableLogging": true,
+													"storeSettings": {
+														"type": "AzureBlobStorageReadSettings",
+														"recursive": true,
+														"wildcardFileName": {
+															"value": "@variables('file_name')",
+															"type": "Expression"
+														},
+														"enablePartitionDiscovery": false
+													}
+												}
+											}
+										],
+										"ifTrueActivities": [
+											{
+												"name": "Copy data",
+												"type": "Copy",
+												"dependsOn": [],
+												"policy": {
+													"timeout": "0.12:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"source": {
+														"type": "DelimitedTextSource",
+														"storeSettings": {
+															"type": "AzureBlobStorageReadSettings",
+															"recursive": true,
+															"wildcardFileName": {
+																"value": "@variables('file_name')",
+																"type": "Expression"
+															},
+															"enablePartitionDiscovery": false
+														},
+														"formatSettings": {
+															"type": "DelimitedTextReadSettings"
+														}
+													},
+													"sink": {
+														"type": "DelimitedTextSink",
+														"storeSettings": {
+															"type": "AzureBlobFSWriteSettings"
+														},
+														"formatSettings": {
+															"type": "DelimitedTextWriteSettings",
+															"quoteAllText": true,
+															"fileExtension": ".csv"
+														}
+													},
+													"enableStaging": false,
+													"translator": {
+														"type": "TabularTranslator",
+														"typeConversion": true,
+														"typeConversionSettings": {
+															"allowDataTruncation": true,
+															"treatBooleanAsNumber": false
+														}
+													}
+												},
+												"inputs": [
+													{
+														"referenceName": "DelimitedText2",
+														"type": "DatasetReference",
+														"parameters": {}
+													}
+												],
+												"outputs": [
+													{
+														"referenceName": "DelimitedText3",
+														"type": "DatasetReference",
+														"parameters": {}
+													}
+												]
+											}
+										]
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"variables": {
+					"file_name": {
+						"type": "String"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Fact-Dimension Table and Business Aggregations')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Fact and Dimension Table",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"policy": {
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "pipeline1",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Business Aggregations",
+						"type": "DatabricksNotebook",
+						"dependsOn": [
+							{
+								"activity": "Fact and Dimension Table",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/pateldharmilkumar@gmail.com/Retail-Project/databricks/gold layer/Business Aggregations"
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricks1",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "Email Notification Business Aggregations",
+						"type": "WebActivity",
+						"dependsOn": [
+							{
+								"activity": "Business Aggregations",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"method": "POST",
+							"headers": {},
+							"url": "https://prod-10.canadacentral.logic.azure.com:443/workflows/5da7d52d79da4054a38a02da2415441e/triggers/When_an_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_an_HTTP_request_is_received%2Frun&sv=1.0&sig=SqXIDPPiURy8vktch1UJN7Zk5Lxu4QNZZkqa8v5csKI",
+							"body": {
+								"value": "{\n  \"PipelineName\":\"@{pipeline().Pipeline}\",\n  \"ErrorMessage\":\"@{coalesce(string(activity('Business Aggregations').error.message),'No error message available')}\",\n  \"DataFactoryName\":\"@{pipeline().DataFactory}\",\n  \"Runid\":\"@{pipeline().RunId}\",\n  \"SourceType\": \"Databricks - Gold Layer\",\n  \"Message\": \"Failure in Business Aggregations (Gold Layer)\",\n  \"ActivityName\": \"Business Aggregations\"\n}",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Email Notification Fact-Dim Table",
+						"type": "WebActivity",
+						"dependsOn": [
+							{
+								"activity": "Fact and Dimension Table",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"method": "POST",
+							"headers": {},
+							"url": "https://prod-10.canadacentral.logic.azure.com:443/workflows/5da7d52d79da4054a38a02da2415441e/triggers/When_an_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_an_HTTP_request_is_received%2Frun&sv=1.0&sig=SqXIDPPiURy8vktch1UJN7Zk5Lxu4QNZZkqa8v5csKI",
+							"body": {
+								"value": "{\n  \"PipelineName\":\"@{pipeline().Pipeline}\",\n  \"ErrorMessage\":\"@{coalesce(string(activity('Fact and Dimension Table').error.message),'No error message available')}\",\n  \"DataFactoryName\":\"@{pipeline().DataFactory}\",\n  \"Runid\":\"@{pipeline().RunId}\",\n  \"SourceType\": \"Databricks - Gold Layer\",\n  \"Message\": \"Failure in Fact and Dimension Table creation\",\n  \"ActivityName\": \"Fact and Dimension Table\"\n}",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Silver Transformation')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Silver Transformation",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"policy": {
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Silver Transformations",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Email Notification Transformations",
+						"type": "WebActivity",
+						"dependsOn": [
+							{
+								"activity": "Silver Transformation",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"method": "POST",
+							"headers": {},
+							"url": "https://prod-10.canadacentral.logic.azure.com:443/workflows/5da7d52d79da4054a38a02da2415441e/triggers/When_an_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_an_HTTP_request_is_received%2Frun&sv=1.0&sig=SqXIDPPiURy8vktch1UJN7Zk5Lxu4QNZZkqa8v5csKI",
+							"body": {
+								"value": "{\n  \"PipelineName\":\"@{pipeline().Pipeline}\",\n  \"ErrorMessage\":\"@{coalesce(string(activity('Silver Transformation').error.message),'No error message available')}\",\n  \"DataFactoryName\":\"@{pipeline().DataFactory}\",\n  \"Runid\":\"@{pipeline().RunId}\",\n  \"SourceType\": \"Databricks / Silver Layer\",\n  \"Message\": \"Failure in Silver Transformation pipeline\",\n  \"ActivityName\": \"Silver Transformation\"\n}",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Source 1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Retrieve Data",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "AzureSqlTable1",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "Iteration",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Retrieve Data",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Retrieve Data').output.value",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "Max_value",
+									"type": "Lookup",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "AzureSqlSource",
+											"sqlReaderQuery": {
+												"value": "Select max(@{item().DELTACOL}) as max from @{item().SCHEMANAME}.@{item().TABLENAME}",
+												"type": "Expression"
+											},
+											"queryTimeout": "02:00:00",
+											"partitionOption": "None"
+										},
+										"dataset": {
+											"referenceName": "AzureSqlTable2",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									}
+								},
+								{
+									"name": "Copy data",
+									"type": "Copy",
+									"dependsOn": [
+										{
+											"activity": "Max_value",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "AzureSqlSource",
+											"sqlReaderQuery": {
+												"value": "select * from @{item().SCHEMANAME}.@{item().TABLENAME} where @{item().DELTACOL} > '@{item().LASTPROCESSEDVALUE}'",
+												"type": "Expression"
+											},
+											"queryTimeout": "02:00:00",
+											"partitionOption": "None"
+										},
+										"sink": {
+											"type": "DelimitedTextSink",
+											"storeSettings": {
+												"type": "AzureBlobFSWriteSettings"
+											},
+											"formatSettings": {
+												"type": "DelimitedTextWriteSettings",
+												"quoteAllText": true,
+												"fileExtension": ".txt"
+											}
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"typeConversion": true,
+											"typeConversionSettings": {
+												"allowDataTruncation": true,
+												"treatBooleanAsNumber": false
+											}
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "SqlTable2",
+											"type": "DatasetReference",
+											"parameters": {
+												"schema_name": {
+													"value": "@item().SCHEMANAME",
+													"type": "Expression"
+												},
+												"table_name": {
+													"value": "@item().TABLENAME",
+													"type": "Expression"
+												}
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "DelimitedText1",
+											"type": "DatasetReference",
+											"parameters": {
+												"folder_name": {
+													"value": "@concat('Sales Project','/','On-Premises','/',item().FOLDERNAME)",
+													"type": "Expression"
+												},
+												"file_name": {
+													"value": "@item().FILENAME",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								},
+								{
+									"name": "Update Watermark Table",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [
+										{
+											"activity": "Copy data",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[sales].[usp_updatewatermarktable1]",
+										"storedProcedureParameters": {
+											"lpv": {
+												"value": {
+													"value": "@activity('Max_value').output.firstRow.max",
+													"type": "Expression"
+												},
+												"type": "String"
+											},
+											"tablename": {
+												"value": {
+													"value": "@item().TABLENAME",
+													"type": "Expression"
+												},
+												"type": "String"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "SqlDatabase1",
+										"type": "LinkedServiceReference"
+									}
+								},
+								{
+									"name": "Success Logs",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [
+										{
+											"activity": "Copy data",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[USP_LOGDETAILS_ONPREMISES]",
+										"storedProcedureParameters": {
+											"COPYDURATION": {
+												"value": {
+													"value": "@activity('Copy data').output.copyDuration",
+													"type": "Expression"
+												},
+												"type": "Int64"
+											},
+											"ERRORMESSAGE": {
+												"value": null,
+												"type": "String"
+											},
+											"ROWCOPIED": {
+												"value": {
+													"value": "@activity('Copy data').output.rowsCopied",
+													"type": "Expression"
+												},
+												"type": "Int64"
+											},
+											"ROWREAD": {
+												"value": {
+													"value": "@activity('Copy data').output.rowsRead",
+													"type": "Expression"
+												},
+												"type": "Int64"
+											},
+											"SCHEMANAME": {
+												"value": {
+													"value": "@item().SCHEMANAME",
+													"type": "Expression"
+												},
+												"type": "String"
+											},
+											"TABLENAME": {
+												"value": {
+													"value": "@item().TABLENAME",
+													"type": "Expression"
+												},
+												"type": "String"
+											},
+											"LOGTIME": {
+												"value": {
+													"value": "@convertTimeZone(utcNow(),'UTC','Eastern Standard Time')",
+													"type": "Expression"
+												},
+												"type": "Datetime"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "SqlDatabase1",
+										"type": "LinkedServiceReference"
+									}
+								},
+								{
+									"name": "Fail Logs",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [
+										{
+											"activity": "Copy data",
+											"dependencyConditions": [
+												"Failed"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[USP_LOGDETAILS_ONPREMISES]",
+										"storedProcedureParameters": {
+											"COPYDURATION": {
+												"value": {
+													"value": "@activity('Copy data').output.copyDuration",
+													"type": "Expression"
+												},
+												"type": "Int64"
+											},
+											"ERRORMESSAGE": {
+												"value": {
+													"value": "@activity('Copy data').Error.message",
+													"type": "Expression"
+												},
+												"type": "String"
+											},
+											"ROWCOPIED": {
+												"value": null,
+												"type": "Int64"
+											},
+											"ROWREAD": {
+												"value": null,
+												"type": "Int64"
+											},
+											"SCHEMANAME": {
+												"value": {
+													"value": "@item().SCHEMANAME",
+													"type": "Expression"
+												},
+												"type": "String"
+											},
+											"TABLENAME": {
+												"value": {
+													"value": "@item().TABLENAME",
+													"type": "Expression"
+												},
+												"type": "String"
+											},
+											"LOGTIME": {
+												"value": {
+													"value": "@convertTimeZone(utcNow(),'UTC','Eastern Standard Time')",
+													"type": "Expression"
+												},
+												"type": "Datetime"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "SqlDatabase1",
+										"type": "LinkedServiceReference"
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/Data Ingestion')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -109,6 +895,23 @@
 								"type": "Expression"
 							}
 						}
+					},
+					{
+						"name": "Monthly Events",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"policy": {
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Storage Event Trigger",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
 					}
 				],
 				"policy": {
@@ -116,7 +919,10 @@
 				},
 				"annotations": []
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/Source 1')]",
+				"[concat(variables('factoryId'), '/pipelines/Storage Event Trigger')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/End to End Retail Pipeline')]",
@@ -196,7 +1002,9 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/Data Ingestion')]"
+				"[concat(variables('factoryId'), '/pipelines/Data Ingestion')]",
+				"[concat(variables('factoryId'), '/pipelines/Silver Transformation')]",
+				"[concat(variables('factoryId'), '/pipelines/Fact-Dimension Table and Business Aggregations')]"
 			]
 		}
 	]
