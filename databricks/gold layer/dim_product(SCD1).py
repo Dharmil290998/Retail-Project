@@ -105,8 +105,3 @@ delta_tgt = DeltaTable.forName(spark, table_name)
     )
     .execute()
 )
-
-# COMMAND ----------
-
-# MAGIC %sql
-# MAGIC select * from sales.gold.dim_product

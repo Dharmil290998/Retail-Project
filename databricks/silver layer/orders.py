@@ -156,17 +156,3 @@ df.write.format("delta") \
     .saveAsTable(silver_table)
 
 print("Silver table created:", silver_table)
-
-# COMMAND ----------
-
-# MAGIC %sql
-# MAGIC select * from sales.silver.orders
-
-# COMMAND ----------
-
-# MAGIC %sql
-# MAGIC drop table sales.silver.orders
-
-# COMMAND ----------
-
-

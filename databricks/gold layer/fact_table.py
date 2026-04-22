@@ -40,10 +40,6 @@ display(fact_sales)
 
 # COMMAND ----------
 
-fact_sales.columns
-
-# COMMAND ----------
-
 fact_sales.write.format("delta") \
     .mode("append") \
     .saveAsTable("sales.gold.fact_sales")
