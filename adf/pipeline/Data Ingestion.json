@@ -89,6 +89,22 @@
 						"type": "Expression"
 					}
 				}
+			},
+			{
+				"name": "Monthly Events",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Storage Event Trigger",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
 			}
 		],
 		"annotations": []
